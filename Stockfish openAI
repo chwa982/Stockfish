@@ -1,0 +1,84 @@
+// Feb 20 2023 
+// chess engine 
+// referencing Stockfish + openAI
+// starting with basics 
+
+// introduce chess: legal moves, logic, chessboard --> keep track of pieces on board
+// evaluate chess (introduce engine): develop the evaluation function --> implement algorithm predictor
+// optimize chess engine performance: use techniques such as alpha-beta pruning, transposition tables, and parallel processing to improve the speed and efficiency of the search algorithm.
+// test and improve
+
+============== JavaScript ==============
+import React from 'react';
+import './Board.css';
+
+const Board = () => {
+  const rows = ['8', '7', '6', '5', '4', '3', '2', '1'];
+  const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+  const renderSquare = (row, col) => {
+    const isDark = (row.charCodeAt(0) + col.charCodeAt(0)) % 2 === 1;
+    return (
+      <div key={col + row} className={`square ${isDark ? 'dark' : 'light'}`}>
+        { /* Render piece here */ }
+      </div>
+    );
+  };
+
+  const renderRow = (row) => (
+    <div key={row} className="row">
+      <div className="label">{row}</div>
+      {cols.map((col) => renderSquare(row, col))}
+    </div>
+  );
+
+  return (
+    <div className="board">
+      {rows.map(renderRow)}
+      <div className="row">
+        <div className="label"></div>
+        {cols.map((col) => (
+          <div key={col} className="label">{col}</div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Board;
+
+
+
+============== PYTHON ==============
+import chess
+import chess.engine
+
+engine = chess.engine.SimpleEngine.popen_uci("path/to/stockfish")
+
+def get_best_move(board):
+    result = engine.play(board, chess.engine.Limit(time=2.0))
+    return result.move
+
+def evaluate_board(board):
+    score = 0
+    for piece_type, value in chess.piece_value.items():
+        score += len(board.pieces(piece_type, chess.WHITE)) * value
+        score -= len(board.pieces(piece_type, chess.BLACK)) * value
+    return score
+
+def play_game():
+    board = chess.Board()
+    while not board.is_game_over():
+        if board.turn == chess.WHITE:
+            move = get_best_move(board)
+        else:
+            move = input("Enter your move: ")
+            move = chess.Move.from_uci(move)
+        board.push(move)
+        print(board)
+    print("Game over. Result: ", board.result())
+
+engine.quit()
+
+==============  ==============
+
